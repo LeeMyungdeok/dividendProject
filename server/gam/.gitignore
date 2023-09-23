@@ -1,0 +1,7 @@
+#gitignore
+
+**/secret.json
+**/secretsub.json
+**/__pycache__
+**/docker
+**/sub_pj
