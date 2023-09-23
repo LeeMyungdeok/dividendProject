@@ -11,6 +11,10 @@ import json
 
 from fastapi import FastAPI
 
+import math
+import numpy
+import stockquery
+
 # from stock import result as R
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
@@ -38,17 +42,17 @@ app=FastAPI()
 
 def get_db_data():
     with engine.connect() as conn:
-        result = conn.execute(text("select * from stock where 주식일반배당률>=4.5"))
+        result = conn.execute(text("select * from stock"))
         resultDict = []
         for row in result:
             resultDict.append({'기준일자':row.기준일자,'주식발행회사명':row.주식발행회사명,"주식일반배당률":row.주식일반배당률,'주식결산월일':row.주식결산월일})
     return resultDict
+    print(resultDict)
 
 # fastapi로 전부다 select
-# @app.get('/selectall')
-# async 
-def selectall():
+@app.get('/selectall')
+async def selectall():
     result = get_db_data()
-    print(result)
+    return result
 
-selectall()
+

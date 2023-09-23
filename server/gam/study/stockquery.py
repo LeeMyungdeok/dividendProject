@@ -41,7 +41,6 @@ def Selectfs():
         resultDict = []
         for row in result:
             resultDict.append({"Code" : row.Code, "Name":row.Name, "MarketId" : row.MarketId, "Dept" : row.Dept, "Close": row.Close})
-        print(resultDict)
     return resultDict
 
 # fastapi로 전부다 select
@@ -63,4 +62,5 @@ async def selectname(name:str):
     return resultDict
 
     
-
+if __name__=="__main__":
+    Selectfs()
