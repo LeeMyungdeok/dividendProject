@@ -10,8 +10,8 @@ app=FastAPI()
 
 
 # fastapi로 전부다 select
-@app.get('/std')
-async def std():
+
+def std():
     stock=Selectfs()
     result=[]
     for i in stock:
@@ -26,39 +26,41 @@ async def std():
 
     #numpy standard deviation
     std=numpy.std(result)
-    print(std)
+    # print(std)
 
     return std
 
 
-@app.get('/sharp')
-async def divid(divid):
-    di= await selectall()
+# @app.get('/sharp')
+def divid(divid):
+    di= selectall()
     for i in di:
         if i['주식발행회사명']==divid:
             div=int(i['주식일반배당률'])
             
-            std1 = await std()
+            std1 = std()
             result = (div - 3.575) / std1
         
             return result
 
 
 #모든 회사의 배당률에대한 sharp 비율 top3 뽑기
-@app.get('/allsharp')
-async def allsharp():
+# @app.get('/allsharp')
+def allsharp():
     di= get_db_data()
     allthing=[]
     for i in di:
         div1=float(i['주식일반배당률'])
         div=int(div1)
-        std1 = await std()
+        std1 = std()
         result = (div - 3.575) / std1
         allthing.append(result)
     
     #list 최댓값 순서대로에서 3개 요소 가져오기:정렬
     ld=sorted(allthing,reverse=True)
-    print(ld[:3])
+    # print(ld[:3])
     topthree=ld[:3]
 
     return topthree
+
+allsharp()

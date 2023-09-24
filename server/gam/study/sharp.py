@@ -47,7 +47,7 @@ def get_db_data():
         for row in result:
             resultDict.append({'기준일자':row.기준일자,'주식발행회사명':row.주식발행회사명,"주식일반배당률":row.주식일반배당률,'주식결산월일':row.주식결산월일})
     return resultDict
-    print(resultDict)
+
 
 # fastapi로 전부다 select
 @app.get('/selectall')
@@ -56,3 +56,5 @@ async def selectall():
     return result
 
 
+if __name__=='__main__':
+    get_db_data()
