@@ -3,6 +3,7 @@ import requests, json, os.path, sqlalchemy, os
 from sqlalchemy import create_engine
 import pandas as pd
 
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.relpath("./")))
 secret_file = os.path.join(BASE_DIR, '../secret.json')
 
@@ -16,22 +17,19 @@ def get_secret(setting, secrets=secrets):
         errorMsg = "Set the {} environment variable.".format(setting)
         return errorMsg
 
-# MySQL 연결
-HOSTNAME = get_secret("Mysql_Hostname")
-PORT = get_secret("Mysql_Port")
-USERNAME = get_secret("Mysql_Username")
-PASSWORD = get_secret("Mysql_Password")
-DBNAME = get_secret("Mysql_DBname")
 
-DB_URL = f'mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DBNAME}'
-print('Connected to Mysql....')
+HOSTNAME=get_secret("rds_endpoint")
+USERNAME=get_secret("Mysql_Username")
+PASSWORD=get_secret("rds_password")
+DBNAME=get_secret("Mysql_DBname")
 
-engine = create_engine(DB_URL)
+engine = create_engine(f'mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}/{DBNAME}')
 
-def stock_data():
+def stock_data(pageNo):
     url = 'https://apis.data.go.kr/1160100/service/GetStocDiviInfoService/getDiviInfo'
     params = '?serviceKey=' + get_secret("data_apiKey")
-    params += '&pageNo=1&numOfRows=10&resultType=json'
+    params += '&pageNo=' +str(pageNo)
+    params += '&numOfRows=10&resultType=json'
     url += params
     
     response = requests.get(url)
@@ -77,7 +75,7 @@ def insert_data_to_mysql(data):
     df = pd.DataFrame(data)
     
     # MySQL 테이블에 데이터 삽입
-    table_name = 'stock'
+    table_name = 'dividend'
     df.to_sql(table_name, engine, if_exists='replace', index=False)
     
     print("Data inserted into MySQL table:", table_name)
