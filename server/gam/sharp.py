@@ -48,23 +48,18 @@ def div():
 
 def price():
     with engine.connect() as conn:
-        df1 = pd.read_sql_query("select AAPL from star", conn)
-        df2 = pd.read_sql_query("select MCSF from star", conn)    
-    ret1 = df1.pct_change()
-    ret2 = df2.pct_change()
+        df = pd.read_sql_query("select * from star", conn)
+         
+    ret= df.pct_change()
     # pct_change는 한 객체 내에서 행과 행의 차이를 현재값과의 백분율로 출력하는 메서드
-    annual_ret1=ret1.mean() * 26 #종목의 1년간 수익률 평균(곱한 수는 data의 row수)
-    daily_cov1 = ret1.cov() #연간 리스크, cov 함수를 이용해 일간변동률의 공분산
-    annual_cov1 = daily_cov1 * 26 #(해당 기간동안) 리스크
-    # print(annual_ret1)
-    # print(daily_cov1)
-    # print(annual_cov1)
-    annual_ret2=ret2.mean() * 26
-    daily_cov2 = ret2.cov()
-    annual_cov2 = daily_cov2 * 26
-    # print(annual_ret2)
-    # print(daily_cov2)
-    # print(annual_cov2)
+    annual_ret=ret.mean() * 26 #종목의 1년간 수익률 평균(곱한 수는 data의 row수)
+    daily_cov = ret.cov() #연간 리스크, cov 함수를 이용해 일간변동률의 공분산
+    annual_cov = daily_cov * 26 #(해당 기간동안) 리스크
+    print(annual_ret)
+    print(daily_cov)
+    print(annual_cov)
+ 
+    
 
     #두 주식에서 주식의 비율을 다르게 해서 100개의 포트폴리오 생성
     # 1. 수익률, 리스크, 비중 list 생성
@@ -77,27 +72,22 @@ def price():
 
     for i in range(100):
         # 2. 랜덤 숫자 3개생성 - 랜덤숫자 3개 합 = 1이 되게 생성
-        weights1 = np.random.random(4)
-        weights1 /= np.sum(weights1)
-        weights2 = np.random.random(4)
-        weights2 /= np.sum(weights2)
+        weights = np.random.random(4)
+        weights /= np.sum(weights)
 
         # 3. 랜덤 생성된 종목별 비중 배열과 종목별 연간 수익률을 곱해 포트폴리오의 전체 수익률을 구현
-        returns1=np.dot(weights1, annual_ret1)
-        returns2=np.dot(weights2, annual_ret2)
+        returns=np.dot(weights, annual_ret)
         
         # 4. 종목별 연간공분산과 종목별 비중배열 곱하고, 다시 종목별 비중의 전치로 곱한다.
         # 결과값의 제곱근을 sqrt()함수로 구하면 해당 포트폴리오 전체 risk가 구해진다. 
-        risk1 = np.sqrt(np.dot(weights1.T, np.dot(annual_cov1, weights1)))
-        risk2= np.sqrt(np.dot(weights2.T, np.dot(annual_cov2, weights2)))
+        risk = np.sqrt(np.dot(weights.T, np.dot(annual_cov, weights)))
 
         # 5. 100개 포트폴리오의 수익률, 리스크, 종목별 비중을 각각 리스트에 추가한다.
-        port_ret.append(returns1)
-        port_risk.append(risk1)
-        port_weights.append(weights1)
-        port_ret.append(returns2)
-        port_risk.append(risk2)
-        port_weights.append(weights2)
+        port_ret.append(returns)
+        port_risk.append(risk)
+        port_weights.append(weights)
+
+        stocks=['AAPL','MCSF']
 
         portfolio = {'Returns' : port_ret, 'Risk' : port_risk}
         for j, s in enumerate(stocks):
@@ -168,5 +158,5 @@ price()
 # plt.xscale('log') 
 # plt.yscale('log')
 
-# plt.show()
-# %%
+plt.show()
+
